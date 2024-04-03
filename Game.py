@@ -68,6 +68,17 @@ class Minesweeper:
             for x in range(self.width):
                 self.revealed[y][x] = True
 
+    def has_revealed_neighbors(self, x, y):
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                if dx == 0 and dy == 0:
+                    continue
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < self.width and 0 <= ny < self.height:
+                    if self.revealed[ny][nx]:
+                        return True
+        return False
+
     def check_win(self):
         if all(self.revealed[y][x] or self.board[y][x] == -1 for x in range(self.width) for y in range(self.height)):
             self.game_state = 'won'
