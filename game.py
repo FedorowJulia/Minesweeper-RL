@@ -8,6 +8,12 @@ class Minesweeper:
         self.board = [[0 for _ in range(width)] for _ in range(height)]
         self.revealed = [[False for _ in range(width)] for _ in range(height)]
         self.game_state = 'playing'
+        self.reset()
+
+    def reset(self):
+        self.board = [[0 for _ in range(self.width)] for _ in range(self.height)]
+        self.revealed = [[False for _ in range(self.width)] for _ in range(self.height)]
+        self.game_state = 'playing'
         self.place_mines()
         self.mark_adjacent_mines()
 
@@ -70,7 +76,6 @@ class Minesweeper:
         state = [[-1 if not self.revealed[y][x] else (self.board[y][x] if self.board[y][x] != -1 else -2) 
                 for x in range(self.width)] for y in range(self.height)]
         return state
-
 
     def print_board(self, reveal_all=False):
         for y in range(self.height):
