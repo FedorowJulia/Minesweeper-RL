@@ -10,3 +10,13 @@ class Agent:
 
     def update_strategy(self, state, action, reward, next_state, done):
         pass
+
+    def get_reward(self, result):
+        if result == 'won':
+            return 100
+        elif result == 'lost':
+            return -100
+        elif result == 'continue':
+            return 1
+        else:
+            return -10

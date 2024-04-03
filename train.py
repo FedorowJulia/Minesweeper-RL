@@ -15,7 +15,7 @@ def train(agent, game, episodes=1000):
             selected_action = game.id_to_action(selected_action_id)
             
             next_state, result = game.reveal_tile(*selected_action)
-            reward = get_reward(result)
+            reward = agent.get_reward(result)
             total_reward += reward
             done = game.is_finished()
             
@@ -23,20 +23,6 @@ def train(agent, game, episodes=1000):
             state = next_state
 
         print(f"Episode {episode + 1}: Game {result}, Total Score: {total_reward}")
-
-                
-def get_reward(result):
-    """
-    Define the reward function based on the result of an action.
-    """
-    if result == 'won':
-        return 100
-    elif result == 'lost':
-        return -100
-    elif result == 'continue':
-        return 1
-    else:
-        return -10
 
 if __name__ == "__main__":
     width, height, num_mines = 10, 10, 30
