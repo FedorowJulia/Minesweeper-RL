@@ -8,25 +8,36 @@ def train(agent, game, episodes=10):
     rewards = []
     outcomes = []
 
-    for episode in range(episodes):
-        game.reset()
-        state = np.array(game.get_state()).flatten().reshape(1, agent.state_size)
-        done = False
-        total_reward = 0
+    logs_dir = 'data/logs'
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
 
-        while not done:
-            action = agent.choose_action(state)
-            _, result = game.reveal_tile(*agent.game.id_to_action(action))
-            next_state = np.array(game.get_state()).flatten().reshape(1, agent.state_size)
-            reward = agent.get_reward(game, result, action)
-            total_reward += reward
-            agent.update_model(state, action, reward, next_state, done)
-            state = next_state
-            done = game.is_finished()
+    rewards_file_path = os.path.join(logs_dir, 'total_rewards.txt')
+    outcomes_file_path = os.path.join(logs_dir, 'outcomes.txt')
 
-        rewards.append(total_reward)
-        outcomes.append(1 if result == 'won' else 0)
-        print(f"Episode {episode + 1}: Game {result}, Total Score: {total_reward}")
+    with open(rewards_file_path, 'w') as rewards_file, open(outcomes_file_path, 'w') as outcomes_file:
+        for episode in range(episodes):
+            game.reset()
+            state = np.array(game.get_state()).flatten().reshape(1, agent.state_size)
+            done = False
+            total_reward = 0
+
+            while not done:
+                action = agent.choose_action(state)
+                _, result = game.reveal_tile(*agent.game.id_to_action(action))
+                next_state = np.array(game.get_state()).flatten().reshape(1, agent.state_size)
+                reward = agent.get_reward(game, result, action)
+                total_reward += reward
+                agent.update_model(state, action, reward, next_state, done)
+                state = next_state
+                done = game.is_finished()
+
+            rewards.append(total_reward)
+            outcomes.append(1 if result == 'won' else 0)
+            print(f"Episode {episode + 1}: Game {result}, Total Score: {total_reward}")
+
+            rewards_file.write(f"Episode {episode + 1}: {total_reward}\n")
+            outcomes_file.write(f"Episode {episode + 1}: {'1' if result == 'won' else '0'}\n")
 
     return rewards, outcomes
 
@@ -45,7 +56,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.tight_layout()
 
-    plots_dir = 'plots'
+    plots_dir = 'data/plots'
     if not os.path.exists(plots_dir):
         os.makedirs(plots_dir)
 
