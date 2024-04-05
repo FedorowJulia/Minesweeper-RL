@@ -25,5 +25,5 @@ if __name__ == "__main__":
     width, height, num_mines = 10, 10, 30
     episodes = 100
     game = Minesweeper(width, height, num_mines)
-    agent = SimplifiedDeepQNAgent(game=game, num_episodes=episodes, state_size=width*height, action_size=width*height, learning_rate=0.01)
+    agent = DeepQNAgent(game=game, num_episodes=episodes, state_size=width*height, action_size=width*height, learning_rate=0.01)
     train(agent, game, episodes)
