@@ -1,36 +1,29 @@
-from Agent import Agent
+from Agent import DeepQNAgent
 from Game import Minesweeper
+import numpy as np
 
 def train(agent, game, episodes=1000):
     for episode in range(episodes):
         game.reset()
-        agent.first_move = True
-        state = game.get_state()
+        state = np.array(game.get_state()).flatten().reshape(1, agent.state_size)
         done = False
         total_reward = 0
 
         while not done:
-            available_actions = game.get_available_actions()
-            action_ids = [game.action_to_id(*action) for action in available_actions]
-            selected_action_id = agent.select_action(action_ids)
-            selected_action = game.id_to_action(selected_action_id)
-            
-            next_state, result = game.reveal_tile(*selected_action)
-            reward = agent.get_reward(game, result, selected_action)
+            action = agent.choose_action(state)
+            _, result = game.reveal_tile(*game.id_to_action(action))
+            next_state = np.array(game.get_state()).flatten().reshape(1, agent.state_size)
+            reward = agent.get_reward(game, result, action)
             total_reward += reward
-            done = game.is_finished()
-            
-            agent.update_strategy(state, selected_action_id, reward, next_state, done)
+            agent.update_model(state, action, reward, next_state, done)
             state = next_state
+            done = game.is_finished()
 
         print(f"Episode {episode + 1}: Game {result}, Total Score: {total_reward}")
-
 
 if __name__ == "__main__":
     width, height, num_mines = 10, 10, 30
     episodes = 100
-    
     game = Minesweeper(width, height, num_mines)
-    agent = Agent(width, height)
-    
+    agent = SimplifiedDeepQNAgent(game=game, num_episodes=episodes, state_size=width*height, action_size=width*height, learning_rate=0.01)
     train(agent, game, episodes)
