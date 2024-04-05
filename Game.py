@@ -8,6 +8,7 @@ class Minesweeper:
         self.board = [[0 for _ in range(width)] for _ in range(height)]
         self.revealed = [[False for _ in range(width)] for _ in range(height)]
         self.game_state = 'playing'
+        self.first_move = True
         self.reset()
 
     def reset(self):
@@ -43,6 +44,7 @@ class Minesweeper:
         return mines
 
     def reveal_tile(self, x, y):
+        self.first_move = False
         if self.game_state != 'playing' or not (0 <= x < self.width and 0 <= y < self.height) or self.revealed[y][x]:
             return None, 'invalid'
         
