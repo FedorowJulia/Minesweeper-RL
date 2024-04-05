@@ -25,7 +25,7 @@ class DeepQNAgent:
         model.add(Dense(256, activation='relu'))
         model.add(Dense(64, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
-        model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
+        model.compile(loss='mse', optimizer=Adam(learning_rate=self.learning_rate))
         return model
 
     def choose_action(self, state):
