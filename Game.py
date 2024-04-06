@@ -43,27 +43,26 @@ class Minesweeper:
                     mines += 1
         return mines
 
-    def reveal_tile(self, x, y):
-        self.first_move = False
+    def reveal_tile(self, x, y, is_direct_action=True):
         if self.game_state != 'playing' or not (0 <= x < self.width and 0 <= y < self.height) or self.revealed[y][x]:
             return None, 'invalid'
-        
         self.revealed[y][x] = True
-
         if self.board[y][x] == -1:
-            self.game_state = 'lost'
+            if is_direct_action:
+                self.game_state = 'lost'
             self.reveal_all()
             return self.get_state(), 'lost'
-
         if self.board[y][x] == 0:
             for dx in [-1, 0, 1]:
                 for dy in [-1, 0, 1]:
                     if dx == 0 and dy == 0:
                         continue
-                    self.reveal_tile(x + dx, y + dy)
-
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < self.width and 0 <= ny < self.height and not self.revealed[ny][nx]:
+                        self.reveal_tile(nx, ny, is_direct_action=False)
         self.check_win()
         return self.get_state(), 'won' if self.game_state == 'won' else 'continue'
+
 
     def reveal_all(self):
         for y in range(self.height):

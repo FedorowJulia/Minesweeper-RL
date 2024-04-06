@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-def train(agent, game, episodes=10):
+def train(agent, game, episodes=100000):
     rewards = []
     outcomes = []
 
@@ -26,7 +26,7 @@ def train(agent, game, episodes=10):
                 action = agent.choose_action(state)
                 _, result = game.reveal_tile(*agent.game.id_to_action(action))
                 next_state = np.array(game.get_state()).flatten().reshape(1, agent.state_size)
-                reward = agent.get_reward(game, result, action)
+                reward = agent.get_reward(game, result, action, is_direct_action=True)
                 total_reward += reward
                 agent.update_model(state, action, reward, next_state, done)
                 state = next_state
@@ -37,13 +37,17 @@ def train(agent, game, episodes=10):
             print(f"Episode {episode + 1}: Game {result}, Total Score: {total_reward}")
 
             rewards_file.write(f"Episode {episode + 1}: {total_reward}\n")
-            outcomes_file.write(f"Episode {episode + 1}: {'1' if result == 'won' else '0'}\n")
+            rewards_file.flush()
+
+            if result == 'won':
+                outcomes_file.write(f"Episode {episode + 1}: 1\n")
+                outcomes_file.flush()
 
     return rewards, outcomes
 
 if __name__ == "__main__":
     width, height, num_mines = 10, 10, 30
-    episodes = 10
+    episodes = 100000
     game = Minesweeper(width, height, num_mines)
     agent = DeepQNAgent(game=game, num_episodes=episodes, state_size=width*height, action_size=width*height, learning_rate=0.01)
     rewards, outcomes = train(agent, game, episodes)

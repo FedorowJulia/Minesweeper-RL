@@ -44,7 +44,9 @@ class DeepQNAgent:
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_reduction
 
-    def get_reward(self, game, result, action):
+    def get_reward(self, game, result, action, is_direct_action):
+        if not is_direct_action:
+            return 0
         if game.first_move:
             game.first_move = False
             return 0
