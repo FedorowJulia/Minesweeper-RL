@@ -30,9 +30,20 @@ class DeepQNAgent:
 
     def choose_action(self, state):
         if np.random.rand() <= self.epsilon:
-            return random.randrange(self.action_size)
-        act_values = self.model.predict(state)
-        return np.argmax(act_values[0])
+            available_actions = self.game.get_available_actions()
+            available_action_ids = [self.game.action_to_id(x, y) for x, y in available_actions]
+            return np.random.choice(available_action_ids)
+        else:
+            act_values = self.model.predict(state)
+            masked_act_values = np.copy(act_values)
+            all_actions = range(self.action_size)
+            available_actions = self.game.get_available_actions()
+            available_action_ids = [self.game.action_to_id(x, y) for x, y in available_actions]
+            for action_id in all_actions:
+                if action_id not in available_action_ids:
+                    masked_act_values[0][action_id] = -np.inf
+            return np.argmax(masked_act_values[0])
+
 
     def update_model(self, state, action, reward, next_state, done):
         target = reward
